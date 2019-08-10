@@ -9,7 +9,7 @@ When 'make' command is fininshed, 'StructureEncode' file is generated.
 
 # Comands    
 
-./StructureEncode Encode   DistanceAdjacencyMatrix.csv   EnergyAdjacencyMatrix.csv    OutputFile   [-config  configFile ]
+./StructureEncode Encode  DistanceAdjacencyMatrix.csv   EnergyAdjacencyMatrix.csv    OutputFile   [-config  configFile ]
 
 
 
