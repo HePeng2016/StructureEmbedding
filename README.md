@@ -7,9 +7,10 @@ How to install mlpack can be found in address: https://github.com/mlpack/mlpack/
 
 When 'make' command is fininshed, 'StructureEncode' file is generated. 
 
-# Comands    
+# Comands 
 
-./StructureEncode Encode  DistanceAdjacencyMatrix.csv   EnergyAdjacencyMatrix.csv    OutputFile   [-config  configFile ]
+
+     ./StructureEncode Encode  DistanceAdjacencyMatrix.csv   EnergyAdjacencyMatrix.csv    OutputFile   [-config  configFile ]
 
 
 
