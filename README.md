@@ -11,6 +11,14 @@ When 'make' command is fininshed, 'StructureEncode' file is generated.
 
 
      ./StructureEncode Encode  DistanceAdjacencyMatrix.csv   EnergyAdjacencyMatrix.csv    OutputFile   [-config  configFile ]
+     
+   The DistanceAdjacencyMatrix is a csv file which is recorded the distance between fragments. The distance is the interfragment
+ distance relative to van-der-Waals radii (-1.00 is printed if distances are not computed). 
+    The size of distance adjacency matrix is  (column : K\*N  
+
+
+The EnergyAdjacencyMatrix is a csv file which is recorded the energy between fragments, and the energy for each fragment.
+     
 
 
 # config file
@@ -26,7 +34,9 @@ Tolerance :
  
  VectorSize :
  
-   VectorSize is the size of final embedding vector for each fragement in a structure.   
+   VectorSize is the size of final embedding vector for each fragement in a structure.
+  
+If the config file is missing, the default tolerance is 0.01 and the default VectorSize is 128.
  
 
 
