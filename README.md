@@ -26,7 +26,7 @@ Tolerance :
  
  VectorSize :
  
-   VectorSize is the size of final embedding vector for each fragement in a protein structure.   
+   VectorSize is the size of final embedding vector for each fragement in a structure.   
  
 
 
