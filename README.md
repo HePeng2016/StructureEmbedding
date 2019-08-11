@@ -34,7 +34,8 @@ When 'make' command is fininshed, 'StructureEncode' file is generated.
    
     ./StructureEncode  FmoToM   OneBody.txt   TwoBody.txt DistanceAdjacencyMatrix.csv   EnergyAdjacencyMatrix.csv  
    
-   OneBody.txt and TwoBody.txt are two parts of result of GAMESS fragment molecular orbital analysis,   
+   OneBody.txt and TwoBody.txt are two parts extracting from result of GAMESS fragment molecular orbital analysis, via a shell script.
+The command will produce two csv files ( DistanceAdjacencyMatrix.csv , EnergyAdjacencyMatrix.csv ), which can be as input files for StructureEncode Encode comand directly. 
 
 # config file
 
