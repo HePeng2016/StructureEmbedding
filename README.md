@@ -12,14 +12,29 @@ When 'make' command is fininshed, 'StructureEncode' file is generated.
 
      ./StructureEncode Encode  DistanceAdjacencyMatrix.csv   EnergyAdjacencyMatrix.csv    OutputFile   [-config  configFile ]
      
-   The DistanceAdjacencyMatrix is a csv file which is recorded the distance between fragments. The distance is the interfragment
+  The DistanceAdjacencyMatrix is a csv file which is recorded the distance between fragments. The distance is the interfragment
  distance relative to van-der-Waals radii (-1.00 is printed if distances are not computed). 
-    The size of distance adjacency matrix is  (column : K\*N  
+  The size of distance adjacency matrix is  (column : K\*N , row : N), N is the number of fragments, and K is the number of conformations for a structure.  
+  
+                conformation.1              conformation.2               ...     conformation.K  
+            frag.1  frag.2 ... frag.N   frag.1  frag.2 ... frag.N
+    frag.1   0.0     0.76  ...  0.41     0.00    0.89  ...  0.42
+    frag.2   0.76    0.00  ...  0.32     0.89    0.00  ...  0.33 
+    ...                    ...
+    frag.N   ...     ...                 ...                 ...
+    
 
-
-The EnergyAdjacencyMatrix is a csv file which is recorded the energy between fragments, and the energy for each fragment.
-     
-
+   ( Notice that the recorded value is the real value plus 1.0).  
+   
+   The EnergyAdjacencyMatrix is a csv file which is recorded the energy between fragments, and the energy for each fragment (all are in kcal/mol).  
+   For multi-conformations, the energy of Energy Adjacency Matrix can be the average of conformations.
+   
+   The command will produce an Output File which record the embedding vectors for each fragment. If two fragments located in the similar  structural environment, then they will have similar vector (Cosine similar metric). 
+   
+   
+    ./StructureEncode  FmoToM   OneBody.txt   TwoBody.txt DistanceAdjacencyMatrix.csv   EnergyAdjacencyMatrix.csv  
+   
+   OneBody.txt and TwoBody.txt are two parts of result of GAMESS fragment molecular orbital analysis,   
 
 # config file
 
