@@ -12,8 +12,7 @@ When 'make' command is fininshed, 'StructureEncode' file is generated.
 
      ./StructureEncode Encode  DistanceAdjacencyMatrix.csv   EnergyAdjacencyMatrix.csv    OutputFile   [-config  configFile ]
      
-  The DistanceAdjacencyMatrix is a csv file which is recorded the distance between fragments. The distance is the interfragment
- distance relative to van-der-Waals radii (-1.00 is printed if distances are not computed). 
+  The DistanceAdjacencyMatrix is a csv file which is recorded the distance between atom fragments(AFrag). The distance is the interfragment distance relative to van-der-Waals radii (-1.00 is printed if distances are not computed). 
   The size of distance adjacency matrix is  (column : K\*N , row : N), N is the number of atom fragments(AFrag), such as amino acid unit and K is the number of conformations for a structure.  
   
                 conformation.1              conformation.2               ...     conformation.K  
