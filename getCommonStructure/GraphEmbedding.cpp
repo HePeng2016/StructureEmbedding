@@ -379,10 +379,13 @@ void GraphEncode::K_GraphGeneration(sp_mat & DistanceMatrix,sp_mat & ConnectionM
         {
              if( DistanceMatrix(i,j)>0 )
              {
-                MatrixX(i,j)=2.0/(exp((DistanceMatrix(i,j)-1.0)/2.0) +1);
+		double x = DistanceMatrix(i,j);
+		x=x-1;
+		x=exp(-x); 
+                MatrixX(i,j)=(1-x)/(1+x);
              }else
              {
-                MatrixX(i,j)=0.0;
+                MatrixX(i,j)=1.0;
              }
         }
 
@@ -421,7 +424,6 @@ void GraphEncode::K_GraphGeneration(sp_mat & DistanceMatrix,sp_mat & ConnectionM
      sc.Encode(MatrixX.t(),D);
      ResultIDArray.resize(2*Rank);
 
-     D.save("EnergyMatrix.txt",csv_ascii);
 
      for(int i=0;i<Rank;i++)
      {
@@ -594,18 +596,6 @@ void GraphEncode::Vectorization(sp_mat & ConnectionMatrix, int N, std::vector< s
              Energy =  Energy+ConnectionMatrix(clusterResult[i].IDArray[j],clusterResult[i].IDArray[j2]);
           }
        }
-
-
-
-       for(int j =0;j<clusterResult[i].IDArray.size();j++)
-        {
-            for(int j2 =0;j2<=j;j2++)
-          {
-             Energy =  Energy+ConnectionMatrix(clusterResult[i].IDArray[j],clusterResult[i].IDArray[j2]);
-          }
-       }
-
-
 
          for(int j =0;j<clusterResult[i].IDArray.size();j++)
          {
