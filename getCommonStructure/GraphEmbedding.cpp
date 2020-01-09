@@ -17,7 +17,7 @@
 	  {
 
                fscanf(OneBody,"{\b|\t|\n}*",IgnorantWord);
-               
+
                strcpy(AminoAcidName,"");
 
                if( fscanf(OneBody,"%s",AminoAcidName) )
@@ -371,78 +371,116 @@ void GraphEncode::K_GraphGeneration(sp_mat & DistanceMatrix,sp_mat & ConnectionM
      double value1;
      ResultIDArray.resize(DistanceMatrix.n_rows);
      MatrixX.resize( DistanceMatrix.n_rows, DistanceMatrix.n_cols);
-     
-     
-     
+
+
+     if(DistanceMatrix.n_cols!=DistanceMatrix.n_rows)
+     {
+        printf("The Distance Matrix should be a square matrix\n");
+     }
      for(int j=0;j< DistanceMatrix.n_cols;j++)
         for(int i=0;i< DistanceMatrix.n_rows;i++)
         {
-             if( DistanceMatrix(i,j)>0 )
+
+             double x = DistanceMatrix(i,j);
+
+             x=x-1;
+             if( x>=0 )
              {
-		double x = DistanceMatrix(i,j);
-		x=x-1;
-		x=exp(-x); 
-                MatrixX(i,j)=(1-x)/(1+x);
+                x=x*x;
+                MatrixX(i,j)= exp(-x);
              }else
              {
-                MatrixX(i,j)=1.0;
+                MatrixX(i,j)=0;
              }
+
         }
+      for(int j=0;j< DistanceMatrix.n_cols;j++)
+      {
+         double sum = -1;
+
+         for(int i=0;i< DistanceMatrix.n_rows;i++)
+         {
+               sum = sum + MatrixX(i,j);
+         };
+         MatrixX(j,j)=sum;
+      }
+
+      for(int j=0;j< DistanceMatrix.n_cols;j++)
+      {
+         for(int i=0;i< DistanceMatrix.n_rows;i++)
+         {
+            if(i!=j)
+            MatrixX(i,j)= MatrixX(i,j);
+         };
+       }
+
 
 
       double PC =0;// principal components
       double AC =0;// all  components
       int Rank =0;
+      //MatrixX.save("DebugMatrix",csv_ascii);
+      eig_sym(s,V,MatrixX);
+      for(int i=0;i<V.n_cols;i++)
+      MatrixX.col(i)= V.col(i)*sqrt(s[i]);
+
 
 
       svd_econ(U,s,V,MatrixX);
+      for(int i=0;i<s.n_elem;i++)
+      {
+         AC = AC+s[i]*s[i];
+      }
 
-
-    for(int i=0;i<s.n_elem;i++)
-    {
-       AC = AC+s[i]*s[i];
-    }
-
-    for(int i=0;i<s.n_elem;i++)
-    {
-       PC = PC+s[i]*s[i];
-       Rank ++;
-       if(PC>((1.0-tolerance)*AC))
-       {
+      for(int i=0;i<s.n_elem;i++)
+      {
+         PC = PC+s[i]*s[i];
+         Rank ++;
+         if(PC>((1.0-precision)*AC))
+         {
            break;
-       }
-    }
+         }
+      }
+
+
+
+     //MatrixX.save("DebugMatrix_2",csv_ascii);
 
      V.resize(MatrixX.n_cols,Rank);
      SparseCoding  sc(0,0,0,86,0.1,1e-1);
-     sc.Lambda1() = 0.03;
+     sc.Lambda1() = 0.18;
      sc.Lambda2() = 0;
      sc.Atoms() = Rank;
+     sc.MaxIterations()=1;
      sc.Dictionary() = V;
-     sc.Train(MatrixX.t());
+     //sc.Dictionary().save("disctionary1",csv_ascii);
      mat D;
+     //printf("%d\n",sc.MaxIterations());
      sc.Encode(MatrixX.t(),D);
      ResultIDArray.resize(2*Rank);
+     //D.save("debug",csv_ascii);
+     //sc.Dictionary().save("disctionary2",csv_ascii);
+
 
 
      for(int i=0;i<Rank;i++)
      {
         for(int j=0;j<D.n_cols;j++)
         {
-              if(D(i,j)>0.000000001)
+              if(D(i,j)>0.01)
               {
                ResultIDArray[i].resize(ResultIDArray[i].size()+1);
                ResultIDArray[i][ResultIDArray[i].size()-1] = j;
               }
 
-             if(D(i,j)<-0.000000001)
+             if(D(i,j)<-0.01)
              {
                ResultIDArray[i+Rank].resize(ResultIDArray[i+Rank].size()+1);
                ResultIDArray[i+Rank][ResultIDArray[i+Rank].size()-1] = j;
              }
         }
      }
-     
+
     DFSCpath.resize(0);
 
 
@@ -537,12 +575,34 @@ void GraphEncode::K_GraphGeneration(sp_mat & DistanceMatrix,sp_mat & ConnectionM
 
                    if(parentSet.size() >= minsupport)
                   {
-                     clusterEntry  Temp;
 
-                     Temp.IDArray = reportPath;
-                     Temp.Rank = old_rank;
-                     Temp.PatternIDs = parentSet;
-                     clusterResult.push_back(Temp);
+                      bool Trim = false;
+
+                      for(int i=0;i<parentSet.size()&&!Trim;i++)
+                      {
+                         for(int j=0;j<i;j++)
+                         {
+
+                              double  x = DistanceMatrix(parentSet[i],parentSet[j]) -1;
+
+                               if (x<0)
+                                x = 1024;
+
+                            if( x > CutOff )
+                            {
+                               Trim = true;
+                               break;
+                            }
+                         }
+                      }
+                    if(!Trim)
+                    {
+                       clusterEntry  Temp;
+                       Temp.IDArray = reportPath;
+                       Temp.Rank = old_rank;
+                       Temp.PatternIDs = parentSet;
+                       clusterResult.push_back(Temp);
+                    }
                   }
                }
         }
@@ -556,18 +616,37 @@ void GraphEncode::Vectorization(sp_mat & ConnectionMatrix, int N, std::vector< s
 {
 
 
+    double Energy =0;
+    std::complex<double> Image(0,1);
+    double t_step= PI*2/(N);
+    int PN;
+    double Shift = round(N*ZeroPosition);
+
+    if((Shift< Diffusion)||(Shift> N-Diffusion))
+    {
+      printf("Error: The ZeroPosition setting is improper\n");
+      return;
+    }
+    double UpperEnerge = ((1-ZeroPosition)*N-Diffusion)*precision;
+    double LowerEnerge = ((-ZeroPosition)*N+Diffusion)*precision;
 
 
     GraphEncodeList.resize(ConnectionMatrix.n_rows);
-  
-  
-  
-  
+
+    for(PN=0;PN<N;PN++)
+    {
+      if( exp(-pow((PN*Diffusion/N),2)/2)<0.00001)
+      break;
+    }
+
+
+
+
     for(int i=0;i<(ConnectionMatrix.n_rows);i++)
     {
-        GraphEncodeList[i].resize(N);
+        GraphEncodeList[i].resize(PN);
 
-        for(int j =0;j<N;j++)
+        for(int j =0;j<PN;j++)
         {
           GraphEncodeList[i][j]=0.0;
         }
@@ -575,38 +654,92 @@ void GraphEncode::Vectorization(sp_mat & ConnectionMatrix, int N, std::vector< s
     }
 
 
+    printf("%d/n",clusterResult.size());
+
 
     for(int i=0;i<clusterResult.size();i++)
     {
 
-        double Energy =0;
-        std::complex<double> Image(0,1);
-        double t_0 = 0.00001;
-        double t_step= 3.1415926*2/N;
+      int  EnergyEncodeType = 1;
 
-
-        if(clusterResult[i].IDArray.size()<2)
-          continue;
-
-
-        for(int j =0;j<clusterResult[i].IDArray.size();j++)
+      if( EnergyEncodeType == 1)
+     {
+     	   
+     	   Energy=0; 
+     	   
+         for(int j =0;j<clusterResult[i].PatternIDs.size();j++)
         {
             for(int j2 =0;j2<=j;j2++)
           {
-             Energy =  Energy+ConnectionMatrix(clusterResult[i].IDArray[j],clusterResult[i].IDArray[j2]);
+             Energy =  Energy+ConnectionMatrix(clusterResult[i].PatternIDs[j],clusterResult[i].PatternIDs[j2]);
           }
-       }
+        }
+          // printf("E:%lf\n",Energy);
+          // printf("\n ");
+          if((Energy<LowerEnerge)||(Energy>UpperEnerge))
+          {
+             printf("Warning: The energy %lf is discarded due to beyond abound, larger VectorSize is necessary or the zero position is needed to be reset.\n",Energy);
+             continue; 
+          }
 
-         for(int j =0;j<clusterResult[i].IDArray.size();j++)
+
+
+         for(int j =0;j<clusterResult[i].PatternIDs.size();j++)
          {
 
-      
-            for( int n=0;n<N;n++)
-                 GraphEncodeList[clusterResult[i].IDArray[j]][n] = GraphEncodeList[clusterResult[i].IDArray[j]][n]+exp(Energy*Image*(t_0+t_step*n));
-                
-         }
-     }
+            printf("%d ",clusterResult[i].PatternIDs[j]);
+            for( int n=0;n<PN;n++)
+              GraphEncodeList[clusterResult[i].PatternIDs[j]][n] = GraphEncodeList[clusterResult[i].PatternIDs[j]][n]+exp((-pow((n*Diffusion/N),2)/2))*exp((round(Energy/precision)+Shift)*Image*(t_step*n));
 
+         }
+
+            
+      }
+
+      if( EnergyEncodeType == 2)
+      {
+
+            for(int j =0;j<clusterResult[i].PatternIDs.size();j++)
+           {
+
+                Energy=0;
+
+
+                for(int j2 =0;j2!=clusterResult[i].PatternIDs.size();j2++)
+                {
+                  Energy =  Energy+ConnectionMatrix(clusterResult[i].PatternIDs[j],clusterResult[i].PatternIDs[j2]);
+                }
+
+                 Energy =  Energy+ConnectionMatrix(clusterResult[i].PatternIDs[j],clusterResult[i].PatternIDs[j]);
+               //  printf("E:%lf\n",Energy);
+               // printf("\n ");
+                 if((Energy<LowerEnerge)||(Energy>UpperEnerge))
+                 {
+                   printf("Warning: The energy %lf is discarded due to beyond abound, larger VectorSize is necessary or the zero position is neaded to be reset.\n",Energy);
+                   continue;
+                 }
+
+                for( int n=0;n<PN;n++)
+                 GraphEncodeList[clusterResult[i].PatternIDs[j]][n] = GraphEncodeList[clusterResult[i].PatternIDs[j]][n]+exp((-pow((n*Diffusion/N),2)/2))*exp((round(Energy/precision)+Shift)*Image*(t_step*n));
+            }
+      }
+
+      double  GaussianBias;
+
+      for(int i=0;i<(ConnectionMatrix.n_rows);i++)
+      {
+         GaussianBias = 0.0;
+         for( int n=0;n<PN;n++)
+         {
+            GaussianBias = GaussianBias+real(GraphEncodeList[i][n]);
+         }
+
+         GraphEncodeList[i][0]= GraphEncodeList[i][0]-GaussianBias;
+      }
+
+
+
+ }
 }
 
 
