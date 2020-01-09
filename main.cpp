@@ -8,7 +8,7 @@ int main( int argc , char *argv[] )
 
      GraphEncode  Test;
      Test.tolerance=0.01;
-     double K =128;
+     double K =4098;
      FILE * configip=NULL;
      char buffer[1024];
 
@@ -58,6 +58,72 @@ int main( int argc , char *argv[] )
                fscanf(configip,"%[\b|\t|\n]",buffer);
          continue;
        }
+
+        if(strcmp(buffer,"CutOff")==0)
+       {
+            fscanf(configip,"%[\b|\t]*",buffer);
+            fscanf(configip,"%s",buffer);
+            if(strcmp(buffer,"=")==0)
+            {
+               fscanf(configip,"%lf",&Test.CutOff);
+            }
+               fscanf(configip,"%[\b|\t|\n]",buffer);
+         continue;
+       }
+
+        if(strcmp(buffer,"Diffusion")==0)
+       {
+            fscanf(configip,"%[\b|\t]*",buffer);
+            fscanf(configip,"%s",buffer);
+            if(strcmp(buffer,"=")==0)
+            {
+               fscanf(configip,"%lf",&Test.Diffusion);
+            }
+               fscanf(configip,"%[\b|\t|\n]",buffer);
+         continue;
+        }
+      
+
+         if(strcmp(buffer,"ZeroPosition")==0)
+        {
+            fscanf(configip,"%[\b|\t]*",buffer);
+            fscanf(configip,"%s",buffer);
+            if(strcmp(buffer,"=")==0)
+            {
+               fscanf(configip,"%lf",&Test.ZeroPosition);
+            }
+               fscanf(configip,"%[\b|\t|\n]",buffer);
+          continue;
+         }
+
+         if(strcmp(buffer,"Precision")==0)
+         {
+            fscanf(configip,"%[\b|\t]*",buffer);
+            fscanf(configip,"%s",buffer);
+            if(strcmp(buffer,"=")==0)
+            {
+               fscanf(configip,"%lf",&Test.precision);
+            }
+               fscanf(configip,"%[\b|\t|\n]",buffer);
+            continue;
+          }
+     
+          if(strcmp(buffer,"ZeroPosition")==0)
+         {
+            fscanf(configip,"%[\b|\t]*",buffer);
+            fscanf(configip,"%s",buffer);
+            if(strcmp(buffer,"=")==0)
+            {
+               fscanf(configip,"%lf",&Test.ZeroPosition);
+            }
+               fscanf(configip,"%[\b|\t|\n]",buffer);
+            continue;
+          }
+
+
+
+
+
     }
    }
 
@@ -105,8 +171,15 @@ for(int i =0;i<argc-1;i++)
 
           for(int j =0;j<GraphEncodeList[i].size();j++)
           {
-             fprintf(ip3,"%lf	", imag(GraphEncodeList[i][j]));
+             fprintf(ip3,"%lf	",real(GraphEncodeList[i][j]));
           }
+   
+           for(int j =0;j<GraphEncodeList[i].size();j++)
+          {
+             fprintf(ip3,"%lf   ",imag(GraphEncodeList[i][j]));
+          }
+
+
           fprintf(ip3,"\n");
       }
      fclose(ip3);
@@ -114,6 +187,9 @@ for(int i =0;i<argc-1;i++)
 
   }
 }
+
+
+
 
 
 
