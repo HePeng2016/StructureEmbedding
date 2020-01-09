@@ -6,6 +6,7 @@
 
 #include "mlpack/methods/sparse_coding/random_initializer.hpp"
 #include "mlpack/methods/sparse_coding/sparse_coding.hpp"
+#define  PI 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706
 using namespace mlpack::sparse_coding;
 
 
@@ -86,11 +87,14 @@ class GraphEncode{
      public:
      std::vector<clusterEntry> clusterResult;
 
-
+     double CutOff = 3.3;
      int MaxDepth = 1024;
      bool rankSkip = true;
      int minsupport=1;
-     double tolerance;
+     double tolerance=0.001;
+     double precision=0.01;
+     double Diffusion=64;
+     double ZeroPosition = 0.75;
      std::vector <int> Common_Set(std::vector <int>a,std::vector <int>b);
      void GamessFMOMatrixRead( FILE *  OneBody,FILE * TwoBody ,sp_mat&DistanceMatrix,sp_mat&EnergyMatrix);
      bool rankFilter(int Rank,std::vector <int> ReportPath,std::vector<int> parentSet);
