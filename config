@@ -1,0 +1,7 @@
+Tolerance = 0.05
+VectorSize = 131072
+CutOff = 3.3
+Diffusion = 256
+Precision = 0.01
+ZeroPosition = 0.75
+
