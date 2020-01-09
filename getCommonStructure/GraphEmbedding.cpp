@@ -687,7 +687,7 @@ void GraphEncode::Vectorization(sp_mat & ConnectionMatrix, int N, std::vector< s
          for(int j =0;j<clusterResult[i].PatternIDs.size();j++)
          {
 
-            printf("%d ",clusterResult[i].PatternIDs[j]);
+            //printf("%d ",clusterResult[i].PatternIDs[j]);
             for( int n=0;n<PN;n++)
               GraphEncodeList[clusterResult[i].PatternIDs[j]][n] = GraphEncodeList[clusterResult[i].PatternIDs[j]][n]+exp((-pow((n*Diffusion/N),2)/2))*exp((round(Energy/precision)+Shift)*Image*(t_step*n));
 
