@@ -168,7 +168,7 @@
             EnergyMatrix(I-1,J-1)=Value;
             EnergyMatrix(J-1,I-1)=Value;
 
-            if( Value >0.000000001|| Value < -0.000000001)
+            if( Distance >0.000000001|| Distance < -0.000000001)
             {
                DistanceMatrix(I-1,J-1) = Distance+1.0;
                DistanceMatrix(J-1,I-1) = Distance+1.0;
