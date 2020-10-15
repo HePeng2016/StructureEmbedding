@@ -1,15 +1,15 @@
-objects =getCommonStructure/GraphEmbedding.o 
-ARMA_INCLUDE_FLAG = -I   ArmaInclude/include   -I    MlpackInclude  
-LIB_FLAGS = -lblas -llapack 
-CXXFLAGS = $(ARMA_INCLUDE_FLAG)
+objects =getCommonStructure/GraphEmbedding.o
+CXXFLAGS =  -I    MlpackInclude
+LIB_FLAGS =  -lopenblas    -llapack
 CC = g++  -std=c++11  -fopenmp     -g  -I getCommonStructure/    #-Wall
 all:    prepareall
-	$(CC)$(CXXFLAGS)   -o   StructureEncode    main.cpp  $(objects) $(LIB_FLAGS)   -lmlpack    
+        $(CC)  -o   StructureEncode    main.cpp  $(objects) $(LIB_FLAGS)   -lmlpack  -larmadillo    
 prepareall:    subsystem
 subsystem:
-	$(MAKE) -C getCommonStructure/
+        $(MAKE) -C getCommonStructure/
 clean :  cleansub
-	rm   StructureEncode
+        rm   StructureEncode
 cleansub :
-	rm  $(objects)
+        rm  $(objects)
+
 
