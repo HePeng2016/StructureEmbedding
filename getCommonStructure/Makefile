@@ -1,10 +1,9 @@
 objects = GraphEmbedding.o
 CC = g++  -std=c++11  -g   #-Wall
-ARMA_INCLUDE_FLAG = -I ../ArmaInclude/include  -I ../MlpackInclude
-LIB_FLAGS = -lblas -llapack  -lmlpack 
-CXXFLAGS = $(ARMA_INCLUDE_FLAG)
+LIB_FLAGS = -fopenmp  -lopenblas   -llapack  -lmlpack  -larmadillo
 install : $(objects)
-GraphEmbedding.o : GraphEmbedding.cpp   GraphEmbedding.h   -lmlpack 
-	$(CC)$(CXXFLAGS)  -c  $<   $(LIB_FLAGS)
+GraphEmbedding.o : GraphEmbedding.cpp   GraphEmbedding.h
+        $(CC)$(LIB_FLAGS)  -c  $<   
 clean :
-	rm  $(objects) 
+        rm  $(objects) 
+                     
