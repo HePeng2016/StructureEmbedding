@@ -1,20 +1,23 @@
-#include <armadillo>
+//#include <armadillo>
 #include <map>
 #include <vector>
 #include <list>
 #include <set>
-
-#include "mlpack/methods/sparse_coding/random_initializer.hpp"
-#include "mlpack/methods/sparse_coding/sparse_coding.hpp"
+#include <mlpack/core.hpp>
+#include <mlpack/methods/sparse_coding/random_initializer.hpp>
+#include <mlpack/methods/sparse_coding/sparse_coding.hpp>
+#include <mlpack/methods/matrix_completion/matrix_completion.hpp>
+#include <complex>
+#include <cmath>
 #define  PI 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706
+using namespace mlpack;
 using namespace mlpack::sparse_coding;
-
-
-
-
+using namespace mlpack::matrix_completion;
 
 using namespace arma;
 using namespace std;
+
+
 
 
 typedef struct DFSC{
@@ -51,8 +54,7 @@ struct Compare
                  return  false;
               }
 
-
-    }
+     }
           return   false;
     }
 };
@@ -86,6 +88,7 @@ class GraphEncode{
      std::set < std::vector<int>,Compare>FilterSet;
      public:
      std::vector<clusterEntry> clusterResult;
+     std::vector<std::vector<unsigned int > > ConnectedGraphs;  
 
      double CutOff = 3.3;
      int MaxDepth = 1024;
@@ -96,7 +99,7 @@ class GraphEncode{
      double Diffusion=64;
      double ZeroPosition = 0.75;
      std::vector <int> Common_Set(std::vector <int>a,std::vector <int>b);
-     void GamessFMOMatrixRead( FILE *  OneBody,FILE * TwoBody ,sp_mat&DistanceMatrix,sp_mat&EnergyMatrix);
+     void GamessFMOMatrixRead( FILE *  OneBody,FILE * TwoBody ,sp_mat&DistanceMatrix,mat&EnergyMatrix);
      bool rankFilter(int Rank,std::vector <int> ReportPath,std::vector<int> parentSet);
      void K_GraphGeneration(sp_mat & DistanceMatrix,sp_mat & ConnectionMatrix);
      void Vectorization(sp_mat & ConnectionMatrix,int N, std::vector< std::vector< std::complex<double> > > &GraphEncodeList );
