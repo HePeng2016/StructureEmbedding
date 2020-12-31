@@ -127,7 +127,11 @@ int main( int argc , char *argv[] )
     }
    }
 
-
+if(argc<1)
+{
+  printf("%s","StructureEncode  FmoToM   OneBody.txt   TwoBody.txt DistanceAdjacencyMatrix.csv   EnergyAdjacencyMatrix.csv\n");
+  printf("%s","StructureEncode  Encode  DistanceAdjacencyMatrix.csv   EnergyAdjacencyMatrix.csv    OutputFile   [-config  configFile ]\n"); 
+}
 
 
 for(int i =0;i<argc-1;i++)
@@ -137,6 +141,8 @@ for(int i =0;i<argc-1;i++)
   {
      FILE * ip1 = fopen(argv[i+1],"r");
      FILE * ip2 = fopen(argv[i+2],"r");
+       
+ 
      sp_mat DistanceMatrix;
      sp_mat EnergyMatrix;
      sp_cx_mat  OutPutM;
